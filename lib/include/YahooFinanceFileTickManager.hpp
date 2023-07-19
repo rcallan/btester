@@ -9,7 +9,7 @@
 
 class YahooFinanceFileTickManager : public TickManager {
 public:
-    YahooFinanceFileTickManager(std::string file_path);
+    YahooFinanceFileTickManager(std::string& file_path);
     Tick getNextTick(Tick last_tick);
     Tick getNextTick();
     int tick_counter;

@@ -7,7 +7,7 @@
 #include "CurrencyConversions.hpp"
 #include "YahooFinanceFileTickManager.hpp"
 
-YahooFinanceFileTickManager::YahooFinanceFileTickManager(std::string file_path) {
+YahooFinanceFileTickManager::YahooFinanceFileTickManager(std::string& file_path) {
     if (DEBUG_FLAG) {
         std::cout
             << "Running with YahooFinanceFileTickManager as default TickManager"
