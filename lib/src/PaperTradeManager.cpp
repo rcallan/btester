@@ -1,31 +1,29 @@
 #include <iostream>
-#include <memory>
 
 #include "PaperTradeManager.hpp"
 
-PaperTradeManager::PaperTradeManager(std::shared_ptr<VirtualBank> vb) {
-    this->vb = vb;
+PaperTradeManager::PaperTradeManager(VirtualBank& _vb) : vb(_vb) {
     this->holdQuantity = 0;
 }
 
 int PaperTradeManager::performBuy(Trade trade) {
     std::cout << "paper trade buy" << std::endl;
-    this->vb->bankDebit(trade.quantity * trade.tick.close);
-    this->holdQuantity += trade.quantity;
+    vb.bankDebit(trade.quantity * trade.tick.close);
+    holdQuantity += trade.quantity;
 
     return 0;
 }
 
 int PaperTradeManager::performSell(Trade trade) {
     std::cout << "paper trade sell" << std::endl;
-    this->vb->bankCredit(trade.quantity * trade.tick.close);
-    this->holdQuantity -= trade.quantity;
+    vb.bankCredit(trade.quantity * trade.tick.close);
+    holdQuantity -= trade.quantity;
 
     return 0;
 }
 
 bool PaperTradeManager::canBuy(Trade trade) {
-    if (this->vb->bankCanDebit(trade.quantity * trade.tick.close)) {
+    if (vb.bankCanDebit(trade.quantity * trade.tick.close)) {
         return true;
     }
 
@@ -38,7 +36,7 @@ bool PaperTradeManager::canBuy(Trade trade) {
 }
 
 bool PaperTradeManager::canSell(Trade trade) {
-    if (trade.quantity <= this->holdQuantity) {
+    if (trade.quantity <= holdQuantity) {
         return true;
     }
 
@@ -51,9 +49,9 @@ bool PaperTradeManager::canSell(Trade trade) {
 }
 
 bool PaperTradeManager::squareOff(Tick last_tick) {
-    if (this->holdQuantity > 0) {
-        Trade squareoff_trade(Trade::SELL, this->holdQuantity, last_tick);
-        this->performTrade(squareoff_trade);
+    if (holdQuantity > 0) {
+        Trade squareoff_trade(Trade::SELL, holdQuantity, last_tick);
+        performTrade(squareoff_trade);
     }
     return false;
 }

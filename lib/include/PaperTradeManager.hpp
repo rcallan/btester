@@ -7,8 +7,8 @@
 class PaperTradeManager : public TradeManager {
 public:
     int holdQuantity;
-    std::shared_ptr<VirtualBank> vb;
-    PaperTradeManager(std::shared_ptr<VirtualBank> vb);
+    VirtualBank vb;
+    PaperTradeManager(VirtualBank& vb);
     int performBuy(Trade trade);
     int performSell(Trade trade);
     bool canBuy(Trade trade);
