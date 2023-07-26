@@ -1,13 +1,13 @@
 #include <fstream>
 #include <iostream>
 #include <random>
-#include <numeric>
 
 #include "cxxopts.hpp"
 
 #include "TradingSystem.hpp"
 #include "helpers.hpp"
 #include "Analyzer.hpp"
+#include "CrossCorr.hpp"
 
 // todo
 // would probably like to have a tool which can retrieve data from yahoo finance which would then be ready for processing
@@ -21,43 +21,10 @@ int main(int argc, char** argv) {
     if (result.count("analysis") && result["analysis"].as<bool>()) {
         Analyzer al(result);
 
-        std::vector<long double> means(al.tickManager.tick_store.size());
-        std::vector<long double> stdevs(means.size());
+        CrossCorr cc(al);
 
-        for (unsigned i = 0; i < means.size(); ++i) {
-            means[i] = std::accumulate(al.tickManager.tick_store[i].begin(), al.tickManager.tick_store[i].end(), 0.0, [](long double a, Tick b) { return a + b.close; }) / al.tickManager.tick_store[i].size();
-        }
-
-        for (unsigned i = 0; i < means.size(); ++i) {
-            long double sumOfSquareDifferences = 0.0;
-            for (unsigned j = 0; j < al.tickManager.tick_store[i].size(); ++j) {
-                sumOfSquareDifferences += (al.tickManager.tick_store[i][j].close - means[i]) * (al.tickManager.tick_store[i][j].close - means[i]);
-            }
-            stdevs[i] = sqrt(1.0 / al.tickManager.tick_store[i].size() * sumOfSquareDifferences);
-            std::cout << "stdevs " << i << " " << stdevs[i] << std::endl;
-        }
-
-        std::vector<std::vector<long double>> crosscorr(means.size(), std::vector<long double>(means.size(), 0.0));
-
-        for (unsigned i = 0; i < crosscorr.size(); ++i) {
-            for (unsigned j = 0; j < crosscorr[i].size(); ++j) {
-                if (crosscorr[i][j] > 0.0) continue;
-                unsigned numVals = al.tickManager.tick_store[i].size();
-                long double numerator = 0.0;
-                for (unsigned k = 0; k < numVals; ++k) {
-                    numerator += (al.tickManager.tick_store[i][k].close - means[i]) * (al.tickManager.tick_store[j][k].close - means[j]);
-                }
-                crosscorr[i][j] = numerator / ((long double)numVals * stdevs[i] * stdevs[j]);
-                crosscorr[j][i] = crosscorr[i][j];
-                std::cout << i << " " << j << " " << crosscorr[i][j] << std::endl;
-            }
-        }
-
-        // start the core event loop
-        // std::vector<Tick> lastTradedTick;
-        // while (al.tickManager.hasNextTick()) {
-        //     lastTradedTick = al.tickManager.getNextTickV();
-        // }
+        cc.process();
+        cc.print();
     } else {
         long double startingBalance = 100000;
         TradingSystem ts(result, startingBalance);
