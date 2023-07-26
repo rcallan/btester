@@ -1,6 +1,7 @@
 #include <fstream>
 #include <iostream>
 #include <random>
+#include <chrono>
 
 #include "cxxopts.hpp"
 
@@ -22,8 +23,18 @@ int main(int argc, char** argv) {
 
         CrossCorr cc(al);
 
+        auto start = std::chrono::high_resolution_clock::now();
+
         cc.process();
-        cc.print();
+
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double> diff = end - start; // this is in ticks
+        std::chrono::milliseconds d = std::chrono::duration_cast<std::chrono::milliseconds>(diff); // ticks to time
+
+        // std::cout << diff.count() << "s\n";
+        std::cout << d.count() << "ms\n";
+
+        // cc.print();
     } else {
         long double startingBalance = 100000;
         TradingSystem ts(result, startingBalance);
