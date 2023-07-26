@@ -34,8 +34,6 @@ public:
             std::cout << "stdevs " << i << " " << stdevs[i] << std::endl;
         }
 
-        // std::vector<std::vector<long double>> crosscorr(means.size(), std::vector<long double>(means.size(), 0.0));
-
         for (unsigned i = 0; i < cc.n_rows; ++i) {
             for (unsigned j = 0; j < cc.n_cols; ++j) {
                 if (cc(i, j) > 0.0) continue;
@@ -46,7 +44,6 @@ public:
                 }
                 cc(i, j) = numerator / ((long double)numVals * stdevs[i] * stdevs[j]);
                 cc(j, i) = cc(i, j);
-                // std::cout << i << " " << j << " " << cc(i, j) << std::endl;
             }
         }
     }

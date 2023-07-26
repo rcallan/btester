@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <limits>
 
 #include "CurrencyConversions.hpp"
 #include "YFMultiFileTickManager.hpp"
@@ -29,44 +30,77 @@ YFMultiFileTickManager::YFMultiFileTickManager(std::string fileList) {
     std::vector<int> firstLines(ifiles.size());
 
     bool done = false;
+    uint counter = 0;
 
+    long latestTime = std::numeric_limits<long>::min();
+    std::vector<bool> flags(ifiles.size(), true);
+    std::vector<Tick> temp(ifiles.size());
+
+    // should loops through all files and only add data to tick store if all files have data for some particular date value
     while (!done) {
+        ++counter;
         for (int i = 0; i < ifiles.size(); ++i) {
-            std::string line;
-            std::getline(ifiles[i], line);
-            if (ifiles[i].eof() || line == "") {
-                done = true;
-                break;
-            }
-
-            // std::cout << "wtf" << std::endl;
-
-            // we ignore the first line since it contains the table headers
-            if (firstLines[i] == 0) {
-                ++firstLines[i];
-                continue;
-            }
-
-            // yahoo finance can have null candles - we skip those
-            if (line.find("null") != std::string::npos) {
-
-                if (DEBUG_FLAG) {
-                    std::cout << "Null candle found, ignoring line - " << line << std::endl;
+            if (counter <= 2 || flags[i]) {
+                std::string line;
+                std::getline(ifiles[i], line);
+                if (ifiles[i].eof() || line == "") {
+                    std::cout << "finished parsing and equalizing input data" << std::endl;
+                    done = true;
+                    break;
                 }
 
-                continue;
+                // we ignore the first line since it contains the table headers
+                if (firstLines[i] == 0) {
+                    ++firstLines[i];
+                    continue;
+                }
+
+                // yahoo finance can have null candles - we skip those
+                if (line.find("null") != std::string::npos) {
+
+                    if (DEBUG_FLAG) {
+                        std::cout << "Null candle found, ignoring line - " << line << std::endl;
+                    }
+
+                    continue;
+                }
+
+                if (DEBUG_FLAG) {
+                    std::cout << "Trying to parse line - " << line << std::endl;
+                }
+
+                // std::cout << line << std::endl;
+
+                Tick currentTick = parseTickfromString(line);
+
+                // tick_store[i].push_back(currentTick);
+                temp[i] = currentTick;
+                // std::cout << "current tick time is " << currentTick.time << std::endl;
+                latestTime = (currentTick.time > latestTime) ? currentTick.time : latestTime;
+                // std::cout << "latest time is " << latestTime << std::endl;
             }
-
-            if (DEBUG_FLAG) {
-                std::cout << "Trying to parse line - " << line << std::endl;
+        }
+        // if (first) first = false;
+        bool allSame = true;
+        for (int i = 0; i < ifiles.size(); ++i) {
+            if (temp[i].time < latestTime) {
+                // std::cout << "time and latest time are " << temp[i].time << " " << latestTime << std::endl;
+                flags[i] = true;
+                allSame = false;
+            } else {
+                flags[i] = false;
             }
-
-            // std::cout << line << std::endl;
-
-            tick_store[i].push_back(parseTickfromString(line));
+        }
+        if (allSame && counter > 1) {
+            // std::cout << "all same for time " << latestTime << std::endl;
+            for (int i = 0; i < ifiles.size(); ++i) {
+                tick_store[i].push_back(temp[i]);
+                flags[i] = true;
+            }
         }
     }
-    
+
+    std::cout << "number of data points is " << tick_store[0].size() << std::endl;    
 }
 
 long int YFMultiFileTickManager::parseDatefromString(std::string line) {
