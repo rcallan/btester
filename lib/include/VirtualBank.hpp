@@ -7,6 +7,7 @@ public:
     bool bankCredit(long double);
     bool bankDebit(long double);
     bool bankCanDebit(long double);
+    VirtualBank() = default;
     VirtualBank(long double);
     long double getBankBalance();
 };

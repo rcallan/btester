@@ -1,0 +1,4 @@
+../sample_inputs/AMZN.csv
+../sample_inputs/BBY.csv
+../sample_inputs/NVDA.csv
+../sample_inputs/TSM.csv

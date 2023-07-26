@@ -6,14 +6,17 @@
 
 class PaperTradeManager : public TradeManager {
 public:
-    int holdQuantity;
-    VirtualBank vb;
-    PaperTradeManager(VirtualBank& vb);
+    PaperTradeManager() : vb(emptyBank) {};
+    PaperTradeManager(VirtualBank& _vb);
     int performBuy(Trade trade);
     int performSell(Trade trade);
     bool canBuy(Trade trade);
     bool canSell(Trade trade);
     bool squareOff(Tick last_tick);
+
+    int holdQuantity;
+    VirtualBank& vb;
+    VirtualBank emptyBank {0.0};
 };
 
 #endif

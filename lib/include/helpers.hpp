@@ -12,7 +12,9 @@ cxxopts::ParseResult processClInput(int argc, char **argv) {
             cxxopts::value<std::string>()->default_value("output.csv"))
         ("d, debug", "Enable debugging",
             cxxopts::value<bool>()->default_value("false"))
-        ("h, help", "Print usage");
+        ("h, help", "Print usage")
+        ("a, analysis", "Analysis mode",
+            cxxopts::value<bool>()->default_value("false"));
 
     auto result = options.parse(argc, argv);
 
