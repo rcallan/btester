@@ -10,6 +10,11 @@
 #include "Analyzer.hpp"
 #include "CrossCorr.hpp"
 
+void* operator new(size_t size) {
+    // std::cout << "allocating " << size << " bytes" << std::endl;
+    return malloc(size);
+}
+
 // todo
 // should probably add some build and usage examples to the readme file
 // would like to add a way to process data without applying a strategy to it and probably save results in a file or database

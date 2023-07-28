@@ -17,7 +17,7 @@ YFMultiFileTickManager::YFMultiFileTickManager(std::string fileList) {
 
     std::ifstream inFile (fileList);
     for (std::string line; std::getline(inFile, line);) {
-        symbols.push_back(line);
+        symbols.push_back(std::move(line));
     }
 
     std::vector<std::ifstream> ifiles(symbols.size());
@@ -36,12 +36,14 @@ YFMultiFileTickManager::YFMultiFileTickManager(std::string fileList) {
     std::vector<bool> flags(ifiles.size(), true);
     std::vector<Tick> temp(ifiles.size());
 
+    std::string line;
+
     // should loops through all files and only add data to tick store if all files have data for some particular date value
     while (!done) {
         ++counter;
         for (int i = 0; i < ifiles.size(); ++i) {
             if (counter <= 2 || flags[i]) {
-                std::string line;
+                
                 std::getline(ifiles[i], line);
                 if (ifiles[i].eof() || line == "") {
                     std::cout << "finished parsing and equalizing input data" << std::endl;
@@ -94,7 +96,7 @@ YFMultiFileTickManager::YFMultiFileTickManager(std::string fileList) {
         if (allSame && counter > 1) {
             // std::cout << "all same for time " << latestTime << std::endl;
             for (int i = 0; i < ifiles.size(); ++i) {
-                tick_store[i].push_back(temp[i]);
+                tick_store[i].push_back(std::move(temp[i]));
                 flags[i] = true;
             }
         }
@@ -103,20 +105,29 @@ YFMultiFileTickManager::YFMultiFileTickManager(std::string fileList) {
     std::cout << "number of data points is " << tick_store[0].size() << std::endl;    
 }
 
-long int YFMultiFileTickManager::parseDatefromString(std::string line) {
+long int YFMultiFileTickManager::parseDatefromString(std::string& line) {
     // int date;
     line.erase(std::remove(line.begin(), line.end(), '-'), line.end());
     return std::stol(line);
 }
 
-Tick YFMultiFileTickManager::parseTickfromString(std::string line) {
+Tick YFMultiFileTickManager::parseTickfromString(std::string& line) {
     Tick parsed_tick;
-    std::vector<std::string> tokens;
-    std::stringstream string_stream(line);
+    // std::vector<std::string> tokens;
+    // std::stringstream string_stream(line);
     std::string token;
     int col = 0;
 
-    while (std::getline(string_stream, token, ',')) {
+    size_t last = 0;
+    size_t next = 0;
+    while ((next = line.find(",", last)) != std::string::npos) {
+        // std::cout << line.substr(last, next - last) << std::endl;
+        token = line.substr(last, next - last);
+        last = next + 1;
+    
+
+    // while (std::getline(string_stream, token, ',')) {
+    // while (std::getline(line, token, ',')) {
 
         if (col > 0) {
             CurrencyConversions::removeCommasfromCurrency(token);
@@ -140,6 +151,9 @@ Tick YFMultiFileTickManager::parseTickfromString(std::string line) {
 
         ++col;
     }
+    // std::cout << s.substr(last) << std::endl;
+    token = line.substr(last);
+    parsed_tick.volume = std::stol(token);
 
     return parsed_tick;
 }

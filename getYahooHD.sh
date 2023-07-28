@@ -4,7 +4,6 @@
 # authenticated site. Start/End Date args can be any GNU readable dates.                                              
 # Script requires: GNU date, curl and bash shell                                                                      
                                                                                                                       
-# symbol=$1                                                                                                             
 startDate=$2                                                                                                          
 endDate=$3                                                                                                            
                                                                                                                       
@@ -24,7 +23,6 @@ function parseCrumb() {
 baseUrl="https://query1.finance.yahoo.com/v7/finance/download/"                                                       
 
 # the command we pass to wget
-# for i in $(sed -e "s:,: :" -e "/Symbol*/ d" -e "/^$/ d" $1 | awk '{print $1}'); do
 while IFS="" read -r i || [ -n "$i" ]
 do
 
@@ -37,7 +35,6 @@ function extractCrumb() {
 
 crumb=$(extractCrumb)                                                                                                 
 crumbArg="&crumb=$crumb"
-# args="$symbol?period1=$startEpoch&period2=$endEpoch&interval=1d&events=history"                                       
 args="$i?period1=$startEpoch&period2=$endEpoch&interval=1d&events=history"
 sheetUrl="$baseUrl$args$crumbArg"
 

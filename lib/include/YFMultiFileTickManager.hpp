@@ -17,7 +17,7 @@ public:
     int tick_counter;
     // std::unordered_map<std::string, std::vector<Tick>> tick_store;
     std::vector<std::vector<Tick>> tick_store;
-    Tick parseTickfromString(std::string line);
-    long int parseDatefromString(std::string date);
+    Tick parseTickfromString(std::string& line);
+    long int parseDatefromString(std::string& date);
     bool hasNextTick();
 };
