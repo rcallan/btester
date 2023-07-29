@@ -1,6 +1,6 @@
 # btester - backtester / trading engine
 
-```bash
+```
 Usage:
   btester v0.0.2 [OPTION...]
 

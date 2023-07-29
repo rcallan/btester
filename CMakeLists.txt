@@ -3,15 +3,26 @@ cmake_minimum_required(VERSION 3.16)
 set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake CACHE STRING "Vcpkg toolchain file")
 set(VCPKG_TARGET_TRIPLET x64-linux CACHE STRING "Vcpkg target triplet")
 
-project(btester)
+project(btester LANGUAGES CXX VERSION 0.0.2)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # set(CMAKE_CXX_FLAGS "-ggdb -O0 -larmadillo")
-set(CMAKE_CXX_FLAGS "-O2 -larmadillo")
+set(CMAKE_CXX_FLAGS "-pedantic -Wall -Wextra -Wno-sign-compare -Wconversion -O2 -larmadillo")
+
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/archive/71140c3ca7a87bb1b5b9c9f1500fea8858cce344.zip
+)
+
+FetchContent_MakeAvailable(googletest)
+
+include(CTest)
 
 add_subdirectory(lib)
+add_subdirectory(tests)
 include_directories(${SHARED_LIB_INCLUDE_DIR})
 
 add_executable(btester main.cpp)

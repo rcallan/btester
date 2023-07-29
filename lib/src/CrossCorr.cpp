@@ -14,7 +14,7 @@ void CrossCorr::computeStdevs(std::vector<std::vector<Tick>::iterator>& iters) {
         for (unsigned j = 0; j < al.windowSize; ++j) {
             sumOfSquareDifferences += ((iters[i] + j)->close - means[i]) * ((iters[i] + j)->close - means[i]);
         }
-        stdevs[i] = sqrt(1.0 / al.windowSize * sumOfSquareDifferences);
+        stdevs[i] = sqrt(sumOfSquareDifferences / (al.windowSize - 1));
     }
 }
 
