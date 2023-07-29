@@ -8,8 +8,8 @@ project(btester)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_CXX_FLAGS "-ggdb -O0 -larmadillo")
-# set(CMAKE_CXX_FLAGS "-O2 -larmadillo")
+# set(CMAKE_CXX_FLAGS "-ggdb -O0 -larmadillo")
+set(CMAKE_CXX_FLAGS "-O2 -larmadillo")
 
 add_subdirectory(lib)
 include_directories(${SHARED_LIB_INCLUDE_DIR})

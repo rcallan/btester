@@ -10,9 +10,27 @@
 #include "Analyzer.hpp"
 #include "CrossCorr.hpp"
 
+struct AllocationMetrics {
+    uint32_t totalAllocated = 0;
+    uint32_t totalFreed = 0;
+
+    uint32_t CurrentUsage() { return totalAllocated - totalFreed; }
+};
+
+static AllocationMetrics s_AllocationMetrics;
+
 void* operator new(size_t size) {
     // std::cout << "allocating " << size << " bytes" << std::endl;
+    s_AllocationMetrics.totalAllocated += size;
+
     return malloc(size);
+}
+
+void operator delete (void* memory, size_t size) {
+    // std::cout << "freeing " << size << " bytes" << std::endl;
+    s_AllocationMetrics.totalFreed += size;
+
+    free(memory);
 }
 
 // todo
@@ -23,20 +41,58 @@ void* operator new(size_t size) {
 int main(int argc, char** argv) {
     cxxopts::ParseResult result = processClInput(argc, argv);
 
+    // std::cout << "current memory usage is " << s_AllocationMetrics.CurrentUsage() << " bytes" << std::endl;
+
     if (result.count("analysis") && result["analysis"].as<bool>()) {
-        Analyzer al(result);
+        uint windowSize = 100;
+        Analyzer al(result, windowSize);
 
         CrossCorr cc(al);
 
+        // std::cout << "current memory usage is " << s_AllocationMetrics.CurrentUsage() << " bytes" << std::endl;
+
         auto start = std::chrono::high_resolution_clock::now();
 
-        cc.process();
+        std::vector<std::vector<Tick>::iterator> iters(al.tickManager.tick_store.size());
+        for (uint i = 0; i < iters.size(); ++i) {
+            iters[i] = al.tickManager.tick_store[i].begin();
+        }
+
+        bool done = false;
+        
+        while (!done) {
+            cc.processNextWindow(iters);
+
+            auto idx = iters[0] - al.tickManager.tick_store[0].begin();
+            // std::cout << "iterator index is " << idx << std::endl;
+            
+            if (idx + al.windowSize > al.tickManager.tick_store[0].size()) {
+                done = true;
+                continue;
+            }
+
+            std::cout << "cross correlation matrix for closing prices of input symbols between " << iters[0]->time << " and " << (iters[0] + al.windowSize)->time << std::endl;
+            cc.print();
+
+            // slides window to next position in the data
+            for (uint i = 0; i < iters.size(); ++i) {
+                iters[i] += al.windowSize;
+            }
+
+            cc.computeEigenDecomp();
+            cc.computeCholeskyDecomps();
+
+            cc.resetCC();
+        }
+
+        
 
         auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> diff = end - start; // this is in ticks
         std::chrono::milliseconds d = std::chrono::duration_cast<std::chrono::milliseconds>(diff); // ticks to time
 
-        // std::cout << diff.count() << "s\n";
+        // std::cout << "current memory usage is " << s_AllocationMetrics.CurrentUsage() << " bytes" << std::endl;
+
         std::cout << d.count() << "ms\n";
 
         // cc.print();
@@ -58,6 +114,8 @@ int main(int argc, char** argv) {
 
         printResults(ts);
     }
+
+    // std::cout << "current memory usage is " << s_AllocationMetrics.CurrentUsage() << " bytes" << std::endl;
     
     return 0;
 }

@@ -1,9 +1,7 @@
 #pragma once
 
-#include <vector>
 #include <iostream>
-#include <numeric>
-#include <cmath>
+#include <vector>
 #include "Analyzer.hpp"
 
 #include <armadillo>
@@ -14,16 +12,26 @@ class CrossCorr {
     std::vector<long double> stdevs;
     arma::mat cc;
 
-public:
+    arma::vec eigval;
+    arma::mat eigvec;
 
+public:
     CrossCorr(Analyzer& _al) : al(_al), means(std::vector<long double>(al.tickManager.tick_store.size())), cc(arma::mat(means.size(), means.size())) {
         stdevs.reserve(means.size());
     }
 
-    void process();
+    void processNextWindow(std::vector<std::vector<Tick>::iterator>& iters);
+    void computeMeans(std::vector<std::vector<Tick>::iterator>& iters);
+    void computeStdevs(std::vector<std::vector<Tick>::iterator>& iters);
+    void computeCC(std::vector<std::vector<Tick>::iterator>& iters);
+
+    void computeEigenDecomp();
+    void computeCholeskyDecomps();
+
+    arma::mat getCC();
+    void resetCC() { cc = arma::eye(means.size(), means.size()); }
 
     void print() {
         std::cout << cc << std::endl;
     }
-    
 };

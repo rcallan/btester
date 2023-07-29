@@ -36,14 +36,13 @@ YFMultiFileTickManager::YFMultiFileTickManager(std::string fileList) {
     std::vector<bool> flags(ifiles.size(), true);
     std::vector<Tick> temp(ifiles.size());
 
-    std::string line;
-
     // should loops through all files and only add data to tick store if all files have data for some particular date value
     while (!done) {
         ++counter;
         for (int i = 0; i < ifiles.size(); ++i) {
             if (counter <= 2 || flags[i]) {
                 
+                std::string line;
                 std::getline(ifiles[i], line);
                 if (ifiles[i].eof() || line == "") {
                     std::cout << "finished parsing and equalizing input data" << std::endl;
