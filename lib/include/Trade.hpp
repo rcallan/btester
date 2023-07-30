@@ -6,32 +6,12 @@
 
 class Trade {
 public:
-    enum move {BUY, SELL, PASS};
+    enum move {BUY, SELL, PASS, EMPTY};
     Trade::move mv;
     int quantity;
     Tick tick;
-    Trade(Trade::move mv, int quantity, Tick tick) {
-        this->mv = mv;
-        this->quantity = quantity;
-        this->tick = tick;
-    }
-    void dump() {
-        // std::cout << "dumping a trade sequence" << std::endl;
-        std::string trade_move;
-
-        if (this->mv == Trade::BUY)
-            trade_move = "BUY";
-        else if (this->mv == Trade::SELL)
-            trade_move = "SELL";
-        else
-            trade_move = "PASS";
-
-        std::cout << "trade move - " << trade_move << std::endl;
-        std::cout << "trade quantity - " << this->quantity << std::endl;
-        std::cout << "tick info -- " << std::endl;
-        this->tick.dump();
-        // std::cout << std::endl;
-    }
+    Trade(Trade::move _mv, int _quantity, Tick _tick) : mv(_mv), quantity(_quantity), tick(_tick) { }
+    void dump();
 };
 
 #endif

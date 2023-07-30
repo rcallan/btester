@@ -88,9 +88,11 @@ Tick YahooFinanceFileTickManager::getNextTick() {
     return this->tick_store[idx];
 }
 
-// todo: not really sure why this function is here
+// note: not usually this function for anything currentlyy
 Tick YahooFinanceFileTickManager::getNextTick(Tick last_tick) {
-    return this->getNextTick();
+    std::vector<Tick>::iterator iter = std::find(std::begin(tick_store), std::end(tick_store), last_tick);
+    tick_counter = std::distance(std::begin(tick_store), iter) + 1;
+    return *(++iter);
 }
 
 bool YahooFinanceFileTickManager::hasNextTick() {

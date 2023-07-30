@@ -163,11 +163,6 @@ std::vector<Tick> YFMultiFileTickManager::getNextTickV() {
     return this->tick_store[idx];
 }
 
-// todo: not really sure why this function is here
-std::vector<Tick> YFMultiFileTickManager::getNextTickV(Tick last_tick) {
-    return this->getNextTickV();
-}
-
 bool YFMultiFileTickManager::hasNextTick() {
     bool hnt = (long unsigned int)this->tick_counter < this->tick_store.size();
     return hnt;

@@ -4,7 +4,7 @@
 class CurrencyConversions {
 public:
     static void removeCommasfromCurrency(std::string &str);
-    static long double stodpre(std::string const &str, std::size_t const p);
+    static long double stodpre(std::string const &str, int const p);
 };
 
 #endif

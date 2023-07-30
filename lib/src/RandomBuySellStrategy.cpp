@@ -10,7 +10,7 @@ Trade RandomBuySellStrategy::processTick(Tick tick) {
     static std::mt19937 mt(rd());
     int min = 1;
     int max = 3;
-    Trade::move mv;
+    Trade::move mv = Trade::EMPTY;
     std::uniform_int_distribution<int> dist(min, max);
     int randomMove = dist(mt);
 

@@ -30,7 +30,7 @@ public:
         }
     }
 
-    uint getNumFiles() { return fileList.size(); }
+    size_t getNumFiles() { return fileList.size(); }
 
 private:
     std::string fileList;

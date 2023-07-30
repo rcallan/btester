@@ -12,6 +12,7 @@ class Tick {
         long int time;
 
         void dump();
+        auto operator<=>(const Tick&) const = default;
 };
 
 #endif

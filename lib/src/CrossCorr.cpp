@@ -4,7 +4,7 @@
 
 void CrossCorr::computeMeans(std::vector<std::vector<Tick>::iterator>& iters) {
     for (unsigned i = 0; i < means.size(); ++i) {
-        means[i] = std::accumulate(iters[i], iters[i] + al.windowSize, 0.0, [](long double a, Tick b) { return a + b.close; }) / al.windowSize;
+        means[i] = std::accumulate(iters[i], iters[i] + al.windowSize, 0.0, [](long double a, const Tick& b) { return a + b.close; }) / al.windowSize;
     }
 }
 

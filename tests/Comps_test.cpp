@@ -5,7 +5,7 @@
 #include <numeric>
 
 double computeMean(std::vector<double>& vals) {
-    return std::accumulate(std::begin(vals), std::end(vals), 0.0) / (size_t)vals.size();
+    return std::accumulate(std::begin(vals), std::end(vals), 0.0) / vals.size();
 }
 
 double computeStdevs(std::vector<double>& vals) {
