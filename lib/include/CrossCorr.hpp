@@ -2,28 +2,26 @@
 
 #include <iostream>
 #include <vector>
-#include "Analyzer.hpp"
+#include "Tick.hpp"
 
 #include <armadillo>
 
 class CrossCorr {
-    Analyzer& al;
     std::vector<long double> means;
     std::vector<long double> stdevs;
     arma::mat cc;
+    uint windowSize;
 
     arma::vec eigval;
     arma::mat eigvec;
 
 public:
-    CrossCorr(Analyzer& _al) : al(_al), means(std::vector<long double>(al.tickManager.tick_store.size())), cc(arma::mat(means.size(), means.size())) {
-        stdevs.reserve(means.size());
-    }
+    CrossCorr(uint sz, uint ws) : means(std::vector<long double>(sz)), stdevs(std::vector<long double>(sz)), cc(arma::mat(sz, sz)), windowSize(ws) { }
 
-    void processNextWindow(std::vector<std::vector<Tick>::iterator>& iters);
-    void computeMeans(std::vector<std::vector<Tick>::iterator>& iters);
-    void computeStdevs(std::vector<std::vector<Tick>::iterator>& iters);
-    void computeCC(std::vector<std::vector<Tick>::iterator>& iters);
+    void processNextWindow();
+    void computeMeans();
+    void computeStdevs();
+    void computeCC();
 
     void computeEigenDecomp();
     void computeCholeskyDecomps();
@@ -34,4 +32,6 @@ public:
     void print() {
         std::cout << cc << std::endl;
     }
+
+    std::vector<std::vector<Tick>::iterator> iters;
 };

@@ -34,53 +34,19 @@ void operator delete (void* memory, size_t size) {
 }
 
 int main(int argc, char** argv) {
-    cxxopts::ParseResult result = processClInput(argc, argv);
+    cxxopts::ParseResult parseOutput = processClInput(argc, argv);
 
     // std::cout << "current memory usage is " << s_AllocationMetrics.CurrentUsage() << " bytes" << std::endl;
 
-    if (result.count("analysis") && result["analysis"].as<bool>()) {
+    if (parseOutput.count("analysis") && parseOutput["analysis"].as<bool>()) {
         uint windowSize = 100;
-        Analyzer al(result, windowSize);
-
-        CrossCorr cc(al);
+        Analyzer al(parseOutput, windowSize);
 
         // std::cout << "current memory usage is " << s_AllocationMetrics.CurrentUsage() << " bytes" << std::endl;
 
         auto start = std::chrono::high_resolution_clock::now();
 
-        std::vector<std::vector<Tick>::iterator> iters(al.tickManager.tick_store.size());
-        for (uint i = 0; i < iters.size(); ++i) {
-            iters[i] = al.tickManager.tick_store[i].begin();
-        }
-
-        bool done = false;
-        
-        while (!done) {
-            cc.processNextWindow(iters);
-
-            auto idx = iters[0] - al.tickManager.tick_store[0].begin();
-            // std::cout << "iterator index is " << idx << std::endl;
-            
-            if (idx + al.windowSize > al.tickManager.tick_store[0].size()) {
-                done = true;
-                continue;
-            }
-
-            std::cout << "cross correlation matrix for closing prices of input symbols between " << iters[0]->time << " and " << (iters[0] + al.windowSize)->time << std::endl;
-            cc.print();
-
-            // slides window to next position in the data
-            for (uint i = 0; i < iters.size(); ++i) {
-                iters[i] += al.windowSize;
-            }
-
-            cc.computeEigenDecomp();
-            cc.computeCholeskyDecomps();
-
-            cc.resetCC();
-        }
-
-        
+        al.run();
 
         auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> diff = end - start; // this is in ticks
@@ -88,12 +54,10 @@ int main(int argc, char** argv) {
 
         // std::cout << "current memory usage is " << s_AllocationMetrics.CurrentUsage() << " bytes" << std::endl;
 
-        std::cout << d.count() << "ms\n";
-
-        // cc.print();
+        std::cout << d.count() << "ms" << std::endl;
     } else {
         long double startingBalance = 100000;
-        TradingSystem ts(result, startingBalance);
+        TradingSystem ts(parseOutput, startingBalance);
 
         // start the core event loop
         Tick lastTradedTick;

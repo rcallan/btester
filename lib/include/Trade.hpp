@@ -6,6 +6,7 @@
 
 class Trade {
 public:
+    // todo - should probably switch this to an enumm class
     enum move {BUY, SELL, PASS, EMPTY};
     Trade::move mv;
     int quantity;

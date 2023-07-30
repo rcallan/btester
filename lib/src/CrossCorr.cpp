@@ -2,32 +2,31 @@
 #include <cmath>
 #include "CrossCorr.hpp"
 
-void CrossCorr::computeMeans(std::vector<std::vector<Tick>::iterator>& iters) {
+void CrossCorr::computeMeans() {
     for (unsigned i = 0; i < means.size(); ++i) {
-        means[i] = std::accumulate(iters[i], iters[i] + al.windowSize, 0.0, [](long double a, const Tick& b) { return a + b.close; }) / al.windowSize;
+        means[i] = std::accumulate(iters[i], iters[i] + windowSize, 0.0, [](long double a, const Tick& b) { return a + b.close; }) / windowSize;
     }
 }
 
-void CrossCorr::computeStdevs(std::vector<std::vector<Tick>::iterator>& iters) {
+void CrossCorr::computeStdevs() {
     for (unsigned i = 0; i < means.size(); ++i) {
         long double sumOfSquareDifferences = 0.0;
-        for (unsigned j = 0; j < al.windowSize; ++j) {
+        for (unsigned j = 0; j < windowSize; ++j) {
             sumOfSquareDifferences += ((iters[i] + j)->close - means[i]) * ((iters[i] + j)->close - means[i]);
         }
-        stdevs[i] = sqrt(sumOfSquareDifferences / (al.windowSize - 1));
+        stdevs[i] = sqrt(sumOfSquareDifferences / (windowSize - 1));
     }
 }
 
-void CrossCorr::computeCC(std::vector<std::vector<Tick>::iterator>& iters) {
+void CrossCorr::computeCC() {
     for (unsigned i = 0; i < cc.n_rows; ++i) {
         for (unsigned j = 0; j < cc.n_cols; ++j) {
             if (cc(i, j) > 0.0) continue;
-            unsigned numVals = al.windowSize;
             long double numerator = 0.0;
-            for (unsigned k = 0; k < numVals; ++k) {
+            for (unsigned k = 0; k < windowSize; ++k) {
                 numerator += ((iters[i] + k)->close - means[i]) * ((iters[j] + k)->close - means[j]);
             }
-            cc(i, j) = numerator / ((long double)numVals * stdevs[i] * stdevs[j]);
+            cc(i, j) = numerator / ((long double)windowSize * stdevs[i] * stdevs[j]);
             cc(j, i) = cc(i, j);
         }
     }
@@ -63,8 +62,8 @@ void CrossCorr::computeCholeskyDecomps() {
     // std::cout << "lower cholesky decomposition with permutation matrix\n" << R << std::endl;
 }
 
-void CrossCorr::processNextWindow(std::vector<std::vector<Tick>::iterator>& iters) {
-    computeMeans(iters);
-    computeStdevs(iters);
-    computeCC(iters);
+void CrossCorr::processNextWindow() {
+    computeMeans();
+    computeStdevs();
+    computeCC();
 }

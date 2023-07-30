@@ -14,14 +14,25 @@
 #include "VirtualBank.hpp"
 #include "PaperTradeManager.hpp"
 
+#include "CrossCorr.hpp"
+
 class Analyzer {
+private:
+    std::string fileList;
+    std::vector<std::string> symbols;
+    std::string outputFile;
 public:
+    uint windowSize;
+    YFMultiFileTickManager tickManager;
+    CrossCorr cc;
+
     Analyzer() = default;
 
-    Analyzer(cxxopts::ParseResult& result, uint _windowSize) : fileList(result["input"].as<std::string>()), tickManager(YFMultiFileTickManager(fileList)) {
+    Analyzer(cxxopts::ParseResult& result, uint _windowSize) : fileList(result["input"].as<std::string>()), 
+                                                                windowSize(_windowSize),
+                                                                tickManager(YFMultiFileTickManager(fileList)),
+                                                                cc(CrossCorr(tickManager.tick_store.size(), windowSize)) {
         outputFile = result["output"].as<std::string>();
-
-        windowSize = _windowSize;
 
         if (DEBUG_FLAG) {
             std::cout << staticmsgs::printargs << std::endl;
@@ -32,14 +43,6 @@ public:
 
     size_t getNumFiles() { return fileList.size(); }
 
-private:
-    std::string fileList;
-    std::vector<std::string> symbols;
-    std::string outputFile;
-public:
-    YFMultiFileTickManager tickManager;
-    VwmaStrategy strategy;
-    VirtualBank vb;
-    PaperTradeManager tradeManager;
-    uint windowSize;
+    void initCC();
+    void run();
 };

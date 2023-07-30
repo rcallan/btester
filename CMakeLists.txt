@@ -8,8 +8,8 @@ project(btester LANGUAGES CXX VERSION 0.0.2)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# set(CMAKE_CXX_FLAGS "-ggdb -O0 -larmadillo")
-set(CMAKE_CXX_FLAGS "-pedantic -Wall -Wextra -Wno-sign-compare -Wconversion -O2 -larmadillo")
+set(CMAKE_CXX_FLAGS "-ggdb -O0 -larmadillo")
+# set(CMAKE_CXX_FLAGS "-pedantic -Wall -Wextra -Wno-sign-compare -Wconversion -O2 -larmadillo")
 
 include(FetchContent)
 FetchContent_Declare(
