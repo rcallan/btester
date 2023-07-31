@@ -24,7 +24,7 @@ private:
     
 public:
     MultiFileTickManager& tickManager;
-    TickProcessor& tProcessor;
+    TickProcessor& tickProcessor;
 
     std::vector<long double> means;
     std::vector<long double> stdevs;
@@ -35,7 +35,7 @@ public:
 
     CrossCorrAnalyzer(MultiFileTickManager& tm, TickProcessor& tp, uint _windowSize) : windowSize(_windowSize),
                                                     tickManager(tm),
-                                                    tProcessor(tp),
+                                                    tickProcessor(tp),
                                                     means(std::vector<long double>(tickManager.getTickStoreSize())),
                                                     stdevs(std::vector<long double>(tickManager.getTickStoreSize())),
                                                     cc(arma::mat(tickManager.getTickStoreSize(), tickManager.getTickStoreSize())) { }

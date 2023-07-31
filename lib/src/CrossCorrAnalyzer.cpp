@@ -5,7 +5,7 @@ void CrossCorrAnalyzer::computeMeans() {
     for (unsigned i = 0; i < means.size(); ++i) {
         // means[i] = std::accumulate(tProcessor.iters[i], tProcessor.iters[i] + windowSize, 0.0, [](long double a, const Tick& b) { return a + b.close; }) / windowSize;
         for (unsigned j = 0; j < windowSize; ++j) {
-            temp[i] += tProcessor.getValue(i, j);
+            temp[i] += tickProcessor.getValue(i, j);
         }
         means[i] = temp[i] / windowSize;
     }
@@ -15,7 +15,7 @@ void CrossCorrAnalyzer::computeStdevs() {
     for (unsigned i = 0; i < means.size(); ++i) {
         long double sumOfSquareDifferences = 0.0;
         for (unsigned j = 0; j < windowSize; ++j) {
-            sumOfSquareDifferences += (tProcessor.getValue(i, j) - means[i]) * (tProcessor.getValue(i, j) - means[i]);
+            sumOfSquareDifferences += (tickProcessor.getValue(i, j) - means[i]) * (tickProcessor.getValue(i, j) - means[i]);
         }
         stdevs[i] = sqrt(sumOfSquareDifferences / (windowSize - 1));
     }
@@ -27,9 +27,9 @@ void CrossCorrAnalyzer::computeCC() {
             if (cc(i, j) > 0.0) continue;
             long double numerator = 0.0;
             for (unsigned k = 0; k < windowSize; ++k) {
-                numerator += (tProcessor.getValue(i, k) - means[i]) * (tProcessor.getValue(j, k) - means[j]);
+                numerator += (tickProcessor.getValue(i, k) - means[i]) * (tickProcessor.getValue(j, k) - means[j]);
             }
-            cc(i, j) = numerator / ((long double)windowSize * stdevs[i] * stdevs[j]);
+            cc(i, j) = numerator / ((long double)(windowSize - 1) * stdevs[i] * stdevs[j]);
             cc(j, i) = cc(i, j);
         }
     }
@@ -73,7 +73,7 @@ void CrossCorrAnalyzer::run() {
     while (!done) {
         processNextWindow();
 
-        auto idx = tProcessor.iters[0] - tickManager.tick_store[0].begin();
+        auto idx = tickProcessor.iters[0] - tickManager.tick_store[0].begin();
         // std::cout << "iterator index is " << idx << std::endl;
         
         if (idx + windowSize > tickManager.tick_store[0].size()) {
@@ -81,12 +81,12 @@ void CrossCorrAnalyzer::run() {
             continue;
         }
 
-        std::cout << "cross correlation matrix for closing prices of input symbols between " << tProcessor.iters[0]->time << " and " << (tProcessor.iters[0] + windowSize)->time << std::endl;
+        std::cout << "cross correlation matrix for closing prices of input symbols between " << tickProcessor.iters[0]->time << " and " << (tickProcessor.iters[0] + windowSize)->time << std::endl;
         cc.print();
 
         // slides window to next position in the data
-        for (uint i = 0; i < tProcessor.iters.size(); ++i) {
-            tProcessor.iters[i] += windowSize;
+        for (uint i = 0; i < tickProcessor.iters.size(); ++i) {
+            tickProcessor.iters[i] += windowSize;
         }
 
         // could probably have the analyzer take another object which handles additional processing on the cc matrix, such as the eigen and cholesky decompositions

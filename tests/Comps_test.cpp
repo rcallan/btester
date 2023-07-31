@@ -23,7 +23,7 @@ public:
 
 using ::testing::Return;
 
-TEST(CompsTest, TestComputeMean2)
+TEST(CompsTest, TestComputeMean)
 {
     std::vector<double> vals {-4.6, 6.8, 10.5, 36.1, 27.7};
 
@@ -43,7 +43,7 @@ TEST(CompsTest, TestComputeMean2)
     ASSERT_NEAR(al.means[0], 15.3, 0.05);
 }
 
-TEST(CompsTest, TestComputeStdevs2)
+TEST(CompsTest, TestComputeStdev)
 {
     std::vector<double> vals {-4.6, 6.8, 10.5, 36.1, 27.7};
 
@@ -64,4 +64,26 @@ TEST(CompsTest, TestComputeStdevs2)
     ASSERT_NEAR(al.stdevs[0], 16.41, 0.05);
 }
 
-// todo - next should probably add a test for the cross correlation values
+TEST(CompsTest, TestComputeCC)
+{
+    std::vector<std::vector<double>> vals {{1, 2, -2, 4, 2, 3, 1, 0},
+                                            {2, 3, -2, 3, 2, 4, 1, -1}};
+
+    MockTickManager tm;
+    MockTickProcessor tp;
+    unsigned windowSize = vals[0].size();
+
+    EXPECT_CALL(tm, getTickStoreSize()).WillRepeatedly(Return(2));
+    for (unsigned i = 0; i < windowSize; ++i) {
+        EXPECT_CALL(tp, getValue(0, i)).WillRepeatedly(Return(vals[0][i]));
+        EXPECT_CALL(tp, getValue(1, i)).WillRepeatedly(Return(vals[1][i]));
+    }
+
+    CrossCorrAnalyzer al(tm, tp, windowSize);
+
+    al.computeMeans();
+    al.computeStdevs();
+    al.computeCC();
+
+    ASSERT_NEAR(al.cc(0, 1), 0.915, 0.01);
+}
