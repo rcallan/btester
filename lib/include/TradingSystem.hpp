@@ -13,7 +13,8 @@
 #include "VirtualBank.hpp"
 #include "PaperTradeManager.hpp"
 
-// todo - should probably make this a class template which could at least take in the type of strategy as a parameter
+// todo - should probably update this to be like the cross corr analyzer class, so subobjects are references instead of copies of objects being passed in
+// this allows us to use polymorphic types when passing these objects in
 class TradingSystem {
 public:
     TradingSystem() = default;

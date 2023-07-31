@@ -6,13 +6,12 @@
 
 #include "constants.hpp"
 #include "Tick.hpp"
-#include "TickManager.hpp"
+#include "MultiFileTickManager.hpp"
 
-class YFMultiFileTickManager : public TickManager {
+class YFMultiFileTickManager : public MultiFileTickManager {
 public:
     std::vector<std::string> symbols;
     int tick_counter;
-    std::vector<std::vector<Tick>> tick_store;
 
     YFMultiFileTickManager(std::string fl);
     Tick parseTickfromString(std::string& line);

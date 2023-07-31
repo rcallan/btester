@@ -6,11 +6,11 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
-#include "TickManager.hpp"
+#include "MultiFileTickManager.hpp"
 #include "TickProcessor.hpp"
 #include "CrossCorrAnalyzer.hpp"
 
-class MockTickManager : public TickManager {
+class MockTickManager : public MultiFileTickManager {
 public:
     MOCK_METHOD(bool, hasNextTick, (), (override));
     MOCK_METHOD(size_t, getTickStoreSize, (), (override));
@@ -36,7 +36,7 @@ TEST(CompsTest, TestComputeMean2)
         EXPECT_CALL(tp, getValue(0, i)).WillRepeatedly(Return(vals[i]));
     }
 
-    CrossCorrAnalyzer<MockTickManager, MockTickProcessor> al(tm, tp, windowSize);
+    CrossCorrAnalyzer al(tm, tp, windowSize);
 
     al.computeMeans();
 
@@ -56,10 +56,12 @@ TEST(CompsTest, TestComputeStdevs2)
         EXPECT_CALL(tp, getValue(0, i)).WillRepeatedly(Return(vals[i]));
     }
 
-    CrossCorrAnalyzer<MockTickManager, MockTickProcessor> al(tm, tp, windowSize);
+    CrossCorrAnalyzer al(tm, tp, windowSize);
 
     al.computeMeans();
     al.computeStdevs();
 
     ASSERT_NEAR(al.stdevs[0], 16.41, 0.05);
 }
+
+// todo - next should probably add a test for the cross correlation values
