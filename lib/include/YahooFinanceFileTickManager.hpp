@@ -17,4 +17,6 @@ public:
     Tick parseTickfromString(std::string line);
     long int parseDatefromString(std::string date);
     bool hasNextTick();
+
+    size_t getTickStoreSize() final { return tick_store.size(); }
 };

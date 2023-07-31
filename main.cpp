@@ -7,8 +7,7 @@
 
 #include "TradingSystem.hpp"
 #include "helpers.hpp"
-#include "Analyzer.hpp"
-#include "CrossCorr.hpp"
+#include "CrossCorrAnalyzer.hpp"
 
 struct AllocationMetrics {
     uint32_t totalAllocated = 0;
@@ -40,7 +39,9 @@ int main(int argc, char** argv) {
 
     if (parseOutput.count("analysis") && parseOutput["analysis"].as<bool>()) {
         uint windowSize = 100;
-        Analyzer al(parseOutput, windowSize);
+        YFMultiFileTickManager tm(parseOutput["input"].as<std::string>());
+        MultiFileTickProcessor tp(tm);
+        CrossCorrAnalyzer<YFMultiFileTickManager, MultiFileTickProcessor> al(tm, tp, windowSize);
 
         // std::cout << "current memory usage is " << s_AllocationMetrics.CurrentUsage() << " bytes" << std::endl;
 

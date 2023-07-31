@@ -1,35 +1,65 @@
-#include <gtest/gtest.h>
 #include <vector>
 #include <iostream>
 #include <cmath>
 #include <numeric>
 
-double computeMean(std::vector<double>& vals) {
-    return std::accumulate(std::begin(vals), std::end(vals), 0.0) / vals.size();
-}
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 
-double computeStdevs(std::vector<double>& vals) {
-    size_t numVals = vals.size();
-    double sumOfSquareDifferences = 0.0;
+#include "TickManager.hpp"
+#include "TickProcessor.hpp"
+#include "CrossCorrAnalyzer.hpp"
 
-    double mean = computeMean(vals);
+class MockTickManager : public TickManager {
+public:
+    MOCK_METHOD(bool, hasNextTick, (), (override));
+    MOCK_METHOD(size_t, getTickStoreSize, (), (override));
+};
 
-    for (unsigned i = 0; i < numVals; ++i) {
-        sumOfSquareDifferences += (vals[i] - mean) * (vals[i] - mean);
+class MockTickProcessor : public TickProcessor {
+public:
+    MOCK_METHOD(long double, getValue, (unsigned i, unsigned j), (override));
+};
+
+using ::testing::Return;
+
+TEST(CompsTest, TestComputeMean2)
+{
+    std::vector<double> vals {-4.6, 6.8, 10.5, 36.1, 27.7};
+
+    MockTickManager tm;
+    MockTickProcessor tp;
+    unsigned windowSize = 5;
+
+    EXPECT_CALL(tm, getTickStoreSize()).WillRepeatedly(Return(1));
+    for (unsigned i = 0; i < vals.size(); ++i) {
+        EXPECT_CALL(tp, getValue(0, i)).WillRepeatedly(Return(vals[i]));
     }
-    return sqrt(sumOfSquareDifferences / (double)(numVals - 1));
+
+    CrossCorrAnalyzer<MockTickManager, MockTickProcessor> al(tm, tp, windowSize);
+
+    al.computeMeans();
+
+    ASSERT_NEAR(al.means[0], 15.3, 0.05);
 }
 
-TEST(CompsTest, TestComputeMean)
+TEST(CompsTest, TestComputeStdevs2)
 {
     std::vector<double> vals {-4.6, 6.8, 10.5, 36.1, 27.7};
 
-    ASSERT_NEAR(computeMean(vals), 15.3, 0.05);
-}
+    MockTickManager tm;
+    MockTickProcessor tp;
+    unsigned windowSize = 5;
 
-TEST(CompsTest, TestComputeStdevs)
-{
-    std::vector<double> vals {-4.6, 6.8, 10.5, 36.1, 27.7};
+    EXPECT_CALL(tm, getTickStoreSize()).WillRepeatedly(Return(1));
+    for (unsigned i = 0; i < vals.size(); ++i) {
+        EXPECT_CALL(tp, getValue(0, i)).WillRepeatedly(Return(vals[i]));
+    }
 
-    ASSERT_NEAR(computeStdevs(vals), 16.41, 0.05);
+    CrossCorrAnalyzer<MockTickManager, MockTickProcessor> al(tm, tp, windowSize);
+
+    al.computeMeans();
+    al.computeStdevs();
+
+    ASSERT_NEAR(al.stdevs[0], 16.41, 0.05);
 }

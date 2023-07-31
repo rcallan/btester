@@ -10,6 +10,7 @@ target_link_libraries(
     Comps_test
     lib
     GTest::gtest_main
+    GTest::gmock_main
 )
 
 include(GoogleTest)
