@@ -41,7 +41,7 @@ int main(int argc, char** argv) {
         uint windowSize = 100;
         YFMultiFileTickManager tm(parseOutput["input"].as<std::string>());
         MultiFileTickProcessor tp(tm);
-        CrossCorrAnalyzer al(tm, tp, windowSize);
+        CrossCorrAnalyzer<MultiFileTickProcessor> al(tm, tp, windowSize);
 
         // std::cout << "current memory usage is " << s_AllocationMetrics.CurrentUsage() << " bytes" << std::endl;
 

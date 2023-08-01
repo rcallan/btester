@@ -16,9 +16,9 @@ public:
     MOCK_METHOD(size_t, getTickStoreSize, (), (override));
 };
 
-class MockTickProcessor : public TickProcessor {
+class MockTickProcessor {
 public:
-    MOCK_METHOD(long double, getValue, (unsigned i, unsigned j), (override));
+    MOCK_METHOD(long double, getValue, (unsigned i, unsigned j), (const));
 };
 
 using ::testing::Return;
@@ -49,7 +49,7 @@ TEST(CompsTest, TestComputeStdev)
 
     MockTickManager tm;
     MockTickProcessor tp;
-    unsigned windowSize = 5;
+    unsigned windowSize = vals.size();
 
     EXPECT_CALL(tm, getTickStoreSize()).WillRepeatedly(Return(1));
     for (unsigned i = 0; i < vals.size(); ++i) {

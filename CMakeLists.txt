@@ -8,8 +8,15 @@ project(btester LANGUAGES CXX VERSION 0.0.2)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_CXX_FLAGS "-ggdb -O0 -larmadillo")
-# set(CMAKE_CXX_FLAGS "-pedantic -Wall -Wextra -Wno-sign-compare -Wconversion -O2 -larmadillo")
+set(CMAKE_CXX_FLAGS "-larmadillo")
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  message("gnu")
+  set(CMAKE_CXX_FLAGS_DEBUG "-O0 -ggdb")
+  set(CMAKE_CXX_FLAGS_RELEASE "-pedantic -Wall -Wextra -Wno-sign-compare -Wconversion -O3")
+endif ()
+
+# set(CMAKE_CXX_FLAGS "-save-temps -fverbose-asm -larmadillo")
 
 include(FetchContent)
 FetchContent_Declare(

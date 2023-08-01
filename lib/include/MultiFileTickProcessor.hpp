@@ -5,8 +5,9 @@
 #include "YFMultiFileTickManager.hpp"
 #include "TickProcessor.hpp"
 
-class MultiFileTickProcessor : public TickProcessor {
+class MultiFileTickProcessor {
 public:
+    std::vector<std::vector<Tick>::iterator> iters;
     MultiFileTickProcessor(YFMultiFileTickManager& tm) {
         iters.resize(tm.tick_store.size());
         for (uint i = 0; i < iters.size(); ++i) {
@@ -14,5 +15,5 @@ public:
         }
     }
 
-    long double getValue(unsigned i, unsigned j) final { return (*(iters[i] + j)).close; }
+    inline long double getValue(unsigned i, unsigned j) const { return (*(iters[i] + j)).close; }
 };
