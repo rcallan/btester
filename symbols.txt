@@ -21,3 +21,5 @@
 ../sample_inputs/MOD.csv
 ../sample_inputs/ENIC.csv
 ../sample_inputs/RIG.csv
+../sample_inputs/TAST.csv
+../sample_inputs/NGL.csv

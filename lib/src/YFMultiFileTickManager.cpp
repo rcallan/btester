@@ -112,8 +112,6 @@ long int YFMultiFileTickManager::parseDatefromString(std::string& line) {
 
 Tick YFMultiFileTickManager::parseTickfromString(std::string& line) {
     Tick parsed_tick;
-    // std::vector<std::string> tokens;
-    // std::stringstream string_stream(line);
     std::string token;
     int col = 0;
 
@@ -123,10 +121,8 @@ Tick YFMultiFileTickManager::parseTickfromString(std::string& line) {
         // std::cout << line.substr(last, next - last) << std::endl;
         token = line.substr(last, next - last);
         last = next + 1;
-    
 
-    // while (std::getline(string_stream, token, ',')) {
-    // while (std::getline(line, token, ',')) {
+        // todo - could probably have this process only the fields we need (eg only calling stold for the adj close for now)
 
         if (col > 0) {
             CurrencyConversions::removeCommasfromCurrency(token);

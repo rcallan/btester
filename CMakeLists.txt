@@ -16,7 +16,11 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set(CMAKE_CXX_FLAGS_RELEASE "-pedantic -Wall -Wextra -Wno-sign-compare -Wconversion -O3")
 endif ()
 
+# for saving assembly output
 # set(CMAKE_CXX_FLAGS "-save-temps -fverbose-asm -larmadillo")
+
+# for saving profiling output
+# set(CMAKE_CXX_FLAGS "-pg -larmadillo")
 
 include(FetchContent)
 FetchContent_Declare(
