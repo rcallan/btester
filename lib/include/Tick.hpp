@@ -8,11 +8,12 @@ class Tick {
         long double close;
         long double high;
         long double adjust_close;
+        long double vwap;
         long int volume;
         long int time;
+        long int txs;
 
         void dump();
-        auto operator<=>(const Tick&) const = default;
 };
 
 #endif

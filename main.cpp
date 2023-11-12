@@ -39,7 +39,8 @@ int main(int argc, char** argv) {
 
     if (parseOutput.count("analysis") && parseOutput["analysis"].as<bool>()) {
         uint windowSize = 100;
-        YFMultiFileTickManager tm(parseOutput["input"].as<std::string>());
+        // YFMultiFileTickManager tm(parseOutput["input"].as<std::string>());
+        PolygonFileTickManager tm(parseOutput["input"].as<std::string>());
         MultiFileTickProcessor tp(tm);
         CrossCorrAnalyzer<MultiFileTickProcessor> al(tm, tp, windowSize);
 

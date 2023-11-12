@@ -11,6 +11,8 @@ void Tick::dump() {
     std::cout << "close - " << std::to_string(this->close) << std::endl;
     std::cout << "adjust close - " << std::to_string(this->adjust_close) << std::endl;
     std::cout << "volume - " << std::to_string(this->volume) << std::endl;
+    std::cout << "vwap - " << std::to_string(this->vwap) << std::endl;
+    std::cout << "txs - " << std::to_string(this->txs) << std::endl;
 
-    // std::cout << std::endl;
+    std::cout << std::endl;
 }
