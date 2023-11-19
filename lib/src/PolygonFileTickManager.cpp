@@ -43,7 +43,7 @@ PolygonFileTickManager::PolygonFileTickManager(std::string file_path) {
 }
 
 long int PolygonFileTickManager::parseDatefromString(std::string line) {
-    int date;
+    // int date;
     line.erase(std::remove(line.begin(), line.end(), '-'), line.end());
     return std::stol(line);
 }
@@ -95,7 +95,11 @@ Tick PolygonFileTickManager::parseTickfromString(std::string line) {
             // std::cout << token << " " << parsed_tick.volume << std::endl;
             // std::cin.get();
         } else if (col == 5) {  // vwap
-            parsed_tick.vwap = std::stold(token);
+            if (parsed_tick.volume == 0) {
+                parsed_tick.vwap = 0.0;
+            } else {
+                parsed_tick.vwap = std::stold(token);
+            }
 
             // std::cout << token << " " << parsed_tick.vwap << std::endl;
             // std::cin.get();
@@ -115,7 +119,11 @@ Tick PolygonFileTickManager::parseTickfromString(std::string line) {
     // std::cout << line << std::endl;
 
     // getting the last column here
-    parsed_tick.txs = std::stol(line);
+    if (parsed_tick.volume == 0) {
+        parsed_tick.txs = 0;
+    } else {
+        parsed_tick.txs = std::stol(line);
+    }
 
     // std::cout << line << " uhhhhh " << parsed_tick.txs << std::endl;
     // std::cin.get();
@@ -136,6 +144,11 @@ Tick PolygonFileTickManager::getNextTick(Tick last_tick) {
 }
 
 bool PolygonFileTickManager::hasNextTick() {
+    // std::cout << tick_counter << " " << tick_store.size() << std::endl;
     bool hnt = this->tick_counter < this->tick_store.size();
     return hnt;
+}
+
+size_t PolygonFileTickManager::getTickStoreSize() {
+    return this->tick_store.size();
 }

@@ -6,6 +6,7 @@
 #include "cxxopts.hpp"
 #include "staticmsgs.hpp"
 
+#include "PolygonFileTickManager.hpp"
 #include "YahooFinanceFileTickManager.hpp"
 #include "RandomBuySellStrategy.hpp"
 #include "SmaStrategy.hpp"
@@ -18,7 +19,7 @@
 class TradingSystem {
 public:
     TradingSystem() = default;
-    TradingSystem(cxxopts::ParseResult& result, long double sb) : inputFile(result["input"].as<std::string>()), startingBalance(sb), tickManager(YahooFinanceFileTickManager(inputFile)), 
+    TradingSystem(cxxopts::ParseResult& result, long double sb) : inputFile(result["input"].as<std::string>()), startingBalance(sb), tickManager(std::make_shared<YahooFinanceFileTickManager>(inputFile)), 
                                                                     vb(VirtualBank(startingBalance)), tradeManager(PaperTradeManager(vb)) {
         // inputFile = result["input"].as<std::string>();
         outputFile = result["output"].as<std::string>();
@@ -34,7 +35,17 @@ public:
         // strategy = std::make_unique<VwmaStrategy>();
     }
 
-    TradingSystem(cxxopts::ParseResult& result) : inputFile(result["input"].as<std::string>()), tickManager(YahooFinanceFileTickManager(inputFile)) {
+    TradingSystem(cxxopts::ParseResult& result) : inputFile(result["input"].as<std::string>()), tickManager(std::make_shared<YahooFinanceFileTickManager>(inputFile)) {
+        outputFile = result["output"].as<std::string>();
+
+        if (DEBUG_FLAG) {
+            std::cout << staticmsgs::printargs << std::endl;
+            std::cout << "Path to input file " << inputFile << std::endl;
+            std::cout << "Path to output file " << outputFile << std::endl;
+        }
+    }
+
+    TradingSystem(cxxopts::ParseResult& result, bool pg) : inputFile(result["input"].as<std::string>()), tickManager(std::make_shared<PolygonFileTickManager>(inputFile)) {
         outputFile = result["output"].as<std::string>();
 
         if (DEBUG_FLAG) {
@@ -49,7 +60,7 @@ private:
     std::string outputFile;
 public:
     long double startingBalance;
-    YahooFinanceFileTickManager tickManager;
+    std::shared_ptr<TickManager> tickManager;
     VwmaStrategy strategy;
     VirtualBank vb;
     PaperTradeManager tradeManager;

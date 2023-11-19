@@ -14,6 +14,8 @@ cxxopts::ParseResult processClInput(int argc, char **argv) {
             cxxopts::value<bool>()->default_value("false"))
         ("h, help", "Print usage")
         ("a, analysis", "Analysis mode",
+            cxxopts::value<bool>()->default_value("false"))
+        ("p, polygon", "pg mode",
             cxxopts::value<bool>()->default_value("false"));
 
     auto result = options.parse(argc, argv);

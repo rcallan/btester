@@ -22,6 +22,10 @@ endif ()
 # for saving profiling output
 # set(CMAKE_CXX_FLAGS "-pg -larmadillo")
 
+add_subdirectory(thread-pool)
+
+find_package(unofficial-concurrentqueue CONFIG REQUIRED)
+
 include(FetchContent)
 FetchContent_Declare(
   googletest

@@ -10,6 +10,7 @@ public:
     // virtual Tick getNextTick() = 0;
     virtual bool hasNextTick() = 0;
     virtual size_t getTickStoreSize() = 0;
+    virtual Tick getNextTick() { return Tick{}; };
 };
 
 #endif
